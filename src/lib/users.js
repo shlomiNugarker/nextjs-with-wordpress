@@ -42,9 +42,8 @@ export function authorPathByName(name) {
 
 export async function getUserByNameSlug(name) {
   const { users } = await getAllUsers()
-
+  console.log({ users })
   const user = users.find((user) => parameterize(user.name) === name)
-
   return {
     user,
   }
@@ -152,7 +151,7 @@ export async function getAllAuthors() {
 export function mapUserData(user) {
   return {
     ...user,
-    roles: [...user.roles.nodes],
+    roles: user.roles?.nodes ? [...user.roles.nodes] : [],
     avatar: user.avatar && updateUserAvatar(user.avatar),
   }
 }

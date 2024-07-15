@@ -1,7 +1,7 @@
-import { ApolloClient, HttpLink, InMemoryCache } from '@apollo/client';
+import { ApolloClient, HttpLink, InMemoryCache } from '@apollo/client'
 
-import { removeLastTrailingSlash } from 'lib/util';
-let client;
+import { removeLastTrailingSlash } from './util'
+let client
 
 /**
  * getApolloClient
@@ -9,9 +9,9 @@ let client;
 
 export function getApolloClient() {
   if (!client) {
-    client = _createApolloClient();
+    client = _createApolloClient()
   }
-  return client;
+  return client
 }
 
 /**
@@ -33,5 +33,5 @@ export function _createApolloClient() {
         },
       },
     }),
-  });
+  })
 }

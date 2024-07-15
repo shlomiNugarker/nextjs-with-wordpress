@@ -22,7 +22,7 @@ import {
  * postPathBySlug
  */
 
-export function postPathBySlug(slug: string) {
+export function postPathBySlug(slug) {
   return `/posts/${slug}`
 }
 
@@ -30,9 +30,9 @@ export function postPathBySlug(slug: string) {
  * getPostBySlug
  */
 
-export async function getPostBySlug(slug: string) {
+export async function getPostBySlug(slug) {
   const apolloClient = getApolloClient()
-  const apiHost = new URL(process.env.WORDPRESS_GRAPHQL_ENDPOINT as string).host
+  const apiHost = new URL(process.env.WORDPRESS_GRAPHQL_ENDPOINT).host
 
   let postData
   let seoData
@@ -53,12 +53,12 @@ export async function getPostBySlug(slug: string) {
 
   if (!postData?.data.post) return { post: undefined }
 
-  const post: any = [postData?.data.post].map(mapPostData)[0]
+  const post = [postData?.data.post].map(mapPostData)[0]
 
   // If the SEO plugin is enabled, look up the data
   // and apply it to the default settings
 
-  if (process.env.WORDPRESS_PLUGIN_SEO === 'true') {
+  if (process.env.WORDPRESS_PLUGIN_SEO === true) {
     try {
       seoData = await apolloClient.query({
         query: QUERY_POST_SEO_BY_SLUG,
@@ -136,11 +136,7 @@ const allPostsIncludesTypes = {
   index: QUERY_ALL_POSTS_INDEX,
 }
 
-export async function getAllPosts(
-  options: { queryIncludes: 'index' | 'archive' | 'all' } = {
-    queryIncludes: 'index',
-  }
-) {
+export async function getAllPosts(options = {}) {
   const { queryIncludes = 'index' } = options
 
   const apolloClient = getApolloClient()
@@ -166,16 +162,8 @@ const postsByAuthorSlugIncludesTypes = {
   index: QUERY_POSTS_BY_AUTHOR_SLUG_INDEX,
 }
 
-export async function getPostsByAuthorSlug({
-  slug,
-  ...options
-}: {
-  slug: string
-  options: { queryIncludes: 'index' | 'archive' | 'all' }
-}) {
-  const {
-    options: { queryIncludes = 'index' },
-  } = options
+export async function getPostsByAuthorSlug({ slug, ...options }) {
+  const { queryIncludes = 'index' } = options
 
   const apolloClient = getApolloClient()
 
@@ -412,8 +400,11 @@ export async function getPagesCount(posts, postsPerPage) {
  * getPaginatedPosts
  */
 
-export async function getPaginatedPosts({ currentPage = 1, ...options } = {}) {
-  const { posts } = await getAllPosts(options)
+export async function getPaginatedPosts({
+  currentPage = 1,
+  queryIncludes,
+} = {}) {
+  const { posts } = await getAllPosts({ queryIncludes })
   const postsPerPage = await getPostsPerPage()
   const pagesCount = await getPagesCount(posts, postsPerPage)
 

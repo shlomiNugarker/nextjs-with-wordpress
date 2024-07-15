@@ -8,9 +8,5 @@ export default async function Home() {
 
   // console.log(posts, pagination)
 
-  return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      Hello nextjs
-    </main>
-  )
+  return <main className="">Hello nextjs, {posts.length} posts fetched</main>
 }

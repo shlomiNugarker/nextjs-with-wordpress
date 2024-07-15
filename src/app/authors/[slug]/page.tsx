@@ -17,5 +17,5 @@ export default async function Category({
 
   // console.log({ user, posts })
 
-  return <main className="">Hello a author slug</main>
+  return <main className="">Hello a author slug: {user.name}</main>
 }

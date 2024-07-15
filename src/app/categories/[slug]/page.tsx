@@ -15,7 +15,7 @@ export default async function Category({
     queryIncludes: 'archive',
   })
 
-  console.log({ posts, category })
+  // console.log({ posts, category })
 
   return <main className="">Hello a category slug</main>
 }

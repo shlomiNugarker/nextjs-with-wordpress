@@ -28,7 +28,7 @@ export default async function Post({
   const hasRelated =
     relatedCategory && Array.isArray(relatedPosts) && relatedPosts.length
 
-  console.log({ post, categories, postId, relatedCategory, relatedPosts })
+  // console.log({ post, categories, postId, relatedCategory, relatedPosts })
 
   return (
     <main className="">

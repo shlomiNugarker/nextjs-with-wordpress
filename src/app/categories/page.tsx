@@ -3,7 +3,7 @@ import { getAllCategories, categoryPathBySlug } from '../../lib/categories'
 
 export default async function Categories() {
   const { categories } = await getAllCategories()
-  console.log({ categories })
+  // console.log({ categories })
 
   return (
     <main className="">

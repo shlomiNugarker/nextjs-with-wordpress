@@ -5,7 +5,7 @@ export default async function Posts() {
     queryIncludes: 'archive',
   })
   const basePath = '/posts'
-  console.log(posts, pagination)
+  // console.log(posts, pagination)
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-24">

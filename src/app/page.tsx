@@ -1,12 +1,26 @@
-import { getPaginatedPosts } from '../lib/posts'
+import Link from 'next/link'
+import { getPaginatedPosts, postPathBySlug } from '../lib/posts'
 
 export default async function Home() {
   const { posts, pagination } = await getPaginatedPosts({
-    queryIncludes: 'archive',
+    // queryIncludes: 'archive',
+    queryIncludes: 'all',
   })
   const basePath = '/posts'
 
   // console.log(posts, pagination)
 
-  return <main className="">Hello nextjs, {posts.length} posts fetched</main>
+  // console.log({ slugs: posts.map((post) => post.slug) })
+
+  return (
+    <main className="">
+      Hello nextjs,
+      {posts.map((post) => (
+        <Link key={post.title} href={postPathBySlug(post.slug)} rel="post">
+          <div>{post.title}</div>
+        </Link>
+      ))}
+      fetched
+    </main>
+  )
 }

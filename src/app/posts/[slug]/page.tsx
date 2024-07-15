@@ -23,7 +23,7 @@ export default async function Post({
   } = post as any
 
   const { category: relatedCategory, posts: relatedPosts } =
-    (await getRelatedPosts(categories, postId)) || {}
+    await getRelatedPosts(categories, postId)
 
   const hasRelated =
     relatedCategory && Array.isArray(relatedPosts) && relatedPosts.length
@@ -35,6 +35,7 @@ export default async function Post({
       Hello a post
       <div>
         <section>
+          {post?.title} <br />
           <Link href={authorPathByName(author.name)} rel="author">
             {author.name}
           </Link>

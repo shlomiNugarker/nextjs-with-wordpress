@@ -223,8 +223,13 @@ export async function getPostsByCategoryId({ categoryId, ...options }) {
 
   const posts = postData?.data.posts.edges.map(({ node = {} }) => node)
 
+  if (Array.isArray(posts)) {
+    return {
+      posts: posts.map(mapPostData),
+    }
+  }
   return {
-    posts: Array.isArray(posts) && posts.map(mapPostData),
+    posts: [],
   }
 }
 

@@ -1,4 +1,4 @@
-import { getPostBySlug, getRelatedPosts } from '@/lib/posts'
+import { getPostBySlug, getRelatedPosts } from '../../../lib/posts'
 import { authorPathByName } from '@/lib/users'
 import Link from 'next/link'
 

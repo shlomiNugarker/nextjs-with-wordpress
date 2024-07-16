@@ -1,8 +1,6 @@
 import { getApolloClient } from './apollo-client'
-
 import { updateUserAvatar } from './users'
 import { sortObjectsByDate } from './datetime'
-
 import {
   QUERY_ALL_POSTS_INDEX,
   QUERY_ALL_POSTS_ARCHIVE,
@@ -18,24 +16,49 @@ import {
   QUERY_POST_PER_PAGE,
 } from '../data/posts'
 
+interface PostData {
+  post?: any // Define your post type accordingly
+}
+
+interface SeoData {
+  post: any
+  seo?: {
+    title?: string
+    metaDesc?: string
+    readingTime?: number
+    canonical?: string
+    opengraphAuthor?: string
+    opengraphDescription?: string
+    opengraphImage?: string
+    opengraphModifiedTime?: string
+    opengraphPublishedTime?: string
+    opengraphPublisher?: string
+    opengraphTitle?: string
+    opengraphType?: string
+    metaRobotsNofollow?: boolean
+    metaRobotsNoindex?: boolean
+    twitterDescription?: string
+    twitterImage?: string
+    twitterTitle?: string
+  }
+}
+
 /**
  * postPathBySlug
  */
-
-export function postPathBySlug(slug) {
+export function postPathBySlug(slug: string): string {
   return `/posts/${slug}`
 }
 
 /**
  * getPostBySlug
  */
-
-export async function getPostBySlug(slug) {
+export async function getPostBySlug(slug: string): Promise<{ post?: any }> {
   const apolloClient = getApolloClient()
-  const apiHost = new URL(process.env.WORDPRESS_GRAPHQL_ENDPOINT).host
+  const apiHost = new URL(process.env.WORDPRESS_GRAPHQL_ENDPOINT as string).host
 
-  let postData
-  let seoData
+  let postData: { data?: PostData }
+  let seoData: { data?: SeoData }
 
   try {
     postData = await apolloClient.query({
@@ -46,19 +69,20 @@ export async function getPostBySlug(slug) {
     })
   } catch (e) {
     console.log(
-      `[posts][getPostBySlug] Failed to query post data: ${e.message}`
+      `[posts][getPostBySlug] Failed to query post data: ${
+        (e as Error).message
+      }`
     )
     throw e
   }
 
-  if (!postData?.data.post) return { post: undefined }
+  if (!postData?.data?.post) return { post: undefined }
 
-  const post = [postData?.data.post].map(mapPostData)[0]
+  const post = [postData.data.post].map(mapPostData)[0]
 
   // If the SEO plugin is enabled, look up the data
   // and apply it to the default settings
-
-  if (process.env.WORDPRESS_PLUGIN_SEO === true) {
+  if (process.env.WORDPRESS_PLUGIN_SEO === 'true') {
     try {
       seoData = await apolloClient.query({
         query: QUERY_POST_SEO_BY_SLUG,
@@ -68,7 +92,9 @@ export async function getPostBySlug(slug) {
       })
     } catch (e) {
       console.log(
-        `[posts][getPostBySlug] Failed to query SEO plugin: ${e.message}`
+        `[posts][getPostBySlug] Failed to query SEO plugin: ${
+          (e as Error).message
+        }`
       )
       console.log(
         'Is the SEO Plugin installed? If not, disable WORDPRESS_PLUGIN_SEO in next.config.js.'
@@ -86,7 +112,6 @@ export async function getPostBySlug(slug) {
     // because it includes the WordPress host, not the site host. We manage the canonical
     // link along with the other metadata, but explicitly check if there's a custom one
     // in here by looking for the API's host in the provided canonical link
-
     if (seo.canonical && !seo.canonical.includes(apiHost)) {
       post.canonical = seo.canonical
     }
@@ -121,22 +146,21 @@ export async function getPostBySlug(slug) {
     }
   }
 
-  return {
-    post,
-  }
+  return { post }
 }
 
 /**
  * getAllPosts
  */
-
 const allPostsIncludesTypes = {
   all: QUERY_ALL_POSTS,
   archive: QUERY_ALL_POSTS_ARCHIVE,
   index: QUERY_ALL_POSTS_INDEX,
 }
 
-export async function getAllPosts(options = {}) {
+export async function getAllPosts(
+  options: { queryIncludes?: keyof typeof allPostsIncludesTypes } = {}
+): Promise<{ posts: any[] }> {
   const { queryIncludes = 'index' } = options
 
   const apolloClient = getApolloClient()
@@ -148,26 +172,31 @@ export async function getAllPosts(options = {}) {
   const posts = data?.data.posts.edges.map(({ node = {} }) => node)
 
   return {
-    posts: Array.isArray(posts) && posts.map(mapPostData),
+    posts: Array.isArray(posts) ? posts.map(mapPostData) : [],
   }
 }
 
 /**
  * getPostsByAuthorSlug
  */
-
 const postsByAuthorSlugIncludesTypes = {
   all: QUERY_POSTS_BY_AUTHOR_SLUG,
   archive: QUERY_POSTS_BY_AUTHOR_SLUG_ARCHIVE,
   index: QUERY_POSTS_BY_AUTHOR_SLUG_INDEX,
 }
 
-export async function getPostsByAuthorSlug({ slug, ...options }) {
+export async function getPostsByAuthorSlug({
+  slug,
+  ...options
+}: {
+  slug: string
+  queryIncludes?: keyof typeof postsByAuthorSlugIncludesTypes
+}): Promise<{ posts: any[] }> {
   const { queryIncludes = 'index' } = options
 
   const apolloClient = getApolloClient()
 
-  let postData
+  let postData: { data?: { posts: { edges: { node: any }[] } } }
 
   try {
     postData = await apolloClient.query({
@@ -178,34 +207,41 @@ export async function getPostsByAuthorSlug({ slug, ...options }) {
     })
   } catch (e) {
     console.log(
-      `[posts][getPostsByAuthorSlug] Failed to query post data: ${e.message}`
+      `[posts][getPostsByAuthorSlug] Failed to query post data: ${
+        (e as Error).message
+      }`
     )
     throw e
   }
 
-  const posts = postData?.data.posts.edges.map(({ node = {} }) => node)
+  const posts = postData?.data?.posts.edges.map(({ node = {} }) => node)
 
   return {
-    posts: Array.isArray(posts) && posts.map(mapPostData),
+    posts: Array.isArray(posts) ? posts.map(mapPostData) : [],
   }
 }
 
 /**
  * getPostsByCategoryId
  */
-
 const postsByCategoryIdIncludesTypes = {
   all: QUERY_POSTS_BY_CATEGORY_ID,
   archive: QUERY_POSTS_BY_CATEGORY_ID_ARCHIVE,
   index: QUERY_POSTS_BY_CATEGORY_ID_INDEX,
 }
 
-export async function getPostsByCategoryId({ categoryId, ...options }) {
+export async function getPostsByCategoryId({
+  categoryId,
+  ...options
+}: {
+  categoryId: number
+  queryIncludes?: keyof typeof postsByCategoryIdIncludesTypes
+}): Promise<{ posts: any[] }> {
   const { queryIncludes = 'index' } = options
 
   const apolloClient = getApolloClient()
 
-  let postData
+  let postData: { data?: { posts: { edges: { node: any }[] } } }
 
   try {
     postData = await apolloClient.query({
@@ -216,28 +252,30 @@ export async function getPostsByCategoryId({ categoryId, ...options }) {
     })
   } catch (e) {
     console.log(
-      `[posts][getPostsByCategoryId] Failed to query post data: ${e.message}`
+      `[posts][getPostsByCategoryId] Failed to query post data: ${
+        (e as Error).message
+      }`
     )
     throw e
   }
 
-  const posts = postData?.data.posts.edges.map(({ node = {} }) => node)
+  const posts = postData?.data?.posts.edges.map(({ node = {} }) => node)
 
-  if (Array.isArray(posts)) {
-    return {
-      posts: posts.map(mapPostData),
-    }
-  }
   return {
-    posts: [],
+    posts: Array.isArray(posts) ? posts.map(mapPostData) : [],
   }
 }
 
 /**
  * getRecentPosts
  */
-
-export async function getRecentPosts({ count, ...options }) {
+export async function getRecentPosts({
+  count,
+  ...options
+}: {
+  count: number
+  queryIncludes?: keyof typeof allPostsIncludesTypes
+}) {
   const { posts } = await getAllPosts(options)
   const sorted = sortObjectsByDate(posts)
   return {
@@ -248,28 +286,18 @@ export async function getRecentPosts({ count, ...options }) {
 /**
  * sanitizeExcerpt
  */
-
-export function sanitizeExcerpt(excerpt) {
-  if (typeof excerpt !== 'string') {
-    throw new Error(
-      `Failed to sanitize excerpt: invalid type ${typeof excerpt}`
-    )
-  }
-
+export function sanitizeExcerpt(excerpt: string): string {
   let sanitized = excerpt
 
   // If the theme includes [...] as the more indication, clean it up to just ...
-
   sanitized = sanitized.replace(/\s?\[&hellip;\]/, '&hellip;')
 
   // If after the above replacement, the ellipsis includes 4 dots, it's
-  // the end of a setence
-
+  // the end of a sentence
   sanitized = sanitized.replace('....', '.')
   sanitized = sanitized.replace('.&hellip;', '.')
 
   // If the theme is including a "Continue..." link, remove it
-
   sanitized = sanitized.replace(/\w*<a class="more-link".*<\/a>/, '')
 
   return sanitized
@@ -278,13 +306,11 @@ export function sanitizeExcerpt(excerpt) {
 /**
  * mapPostData
  */
-
-export function mapPostData(post = {}) {
+export function mapPostData(post: any) {
   const data = { ...post }
 
   // Clean up the author object to avoid someone having to look an extra
   // level deeper into the node
-
   if (data.author) {
     data.author = {
       ...data.author.node,
@@ -295,15 +321,13 @@ export function mapPostData(post = {}) {
   // URL. This ends up redirecting to https, but it gives mixed content warnings
   // as the HTML shows it as http. Replace the url to avoid those warnings
   // and provide a secure URL by default
-
   if (data.author?.avatar) {
     data.author.avatar = updateUserAvatar(data.author.avatar)
   }
 
   // Clean up the categories to make them more easy to access
-
   if (data.categories) {
-    data.categories = data.categories.edges.map(({ node }) => {
+    data.categories = data.categories.edges.map(({ node }: { node: any }) => {
       return {
         ...node,
       }
@@ -311,7 +335,6 @@ export function mapPostData(post = {}) {
   }
 
   // Clean up the featured image to make them more easy to access
-
   if (data.featuredImage) {
     data.featuredImage = data.featuredImage.node
   }
@@ -322,11 +345,14 @@ export function mapPostData(post = {}) {
 /**
  * getRelatedPosts
  */
+export async function getRelatedPosts(
+  categories: any[],
+  postId: number,
+  count = 5
+) {
+  if (!Array.isArray(categories) || categories.length === 0) return []
 
-export async function getRelatedPosts(categories, postId, count = 5) {
-  if (!Array.isArray(categories) || categories.length === 0) return
-
-  let related = {
+  let related: any = {
     category: categories && categories.shift(),
   }
 
@@ -336,7 +362,9 @@ export async function getRelatedPosts(categories, postId, count = 5) {
       queryIncludes: 'archive',
     })
 
-    const filtered = posts.filter(({ postId: id }) => id !== postId)
+    const filtered = posts.filter(
+      ({ postId: id }: { postId: number }) => id !== postId
+    )
     const sorted = sortObjectsByDate(filtered)
 
     related.posts = sorted.map((post) => ({
@@ -354,23 +382,21 @@ export async function getRelatedPosts(categories, postId, count = 5) {
     return related.posts.slice(0, count)
   }
 
-  return related
+  return related.posts || []
 }
 
 /**
  * sortStickyPosts
  */
-
-export function sortStickyPosts(posts) {
-  return [...posts].sort((post) => (post.isSticky ? -1 : 1))
+export function sortStickyPosts(posts: any[]) {
+  return [...posts].sort((a, b) => (a.isSticky ? -1 : 1))
 }
 
 /**
  * getPostsPerPage
  */
-
 export async function getPostsPerPage() {
-  //If POST_PER_PAGE is defined at next.config.js
+  // If POST_PER_PAGE is defined at next.config.js
   if (process.env.POSTS_PER_PAGE) {
     console.warn(
       'You are using the deprecated POST_PER_PAGE variable. Use your WordPress instance instead to set this value ("Settings" > "Reading" > "Blog pages show at most").'
@@ -387,7 +413,7 @@ export async function getPostsPerPage() {
 
     return Number(data.allSettings.readingSettingsPostsPerPage)
   } catch (e) {
-    console.log(`Failed to query post per page data: ${e.message}`)
+    console.log(`Failed to query post per page data: ${(e as Error).message}`)
     throw e
   }
 }
@@ -395,8 +421,7 @@ export async function getPostsPerPage() {
 /**
  * getPageCount
  */
-
-export async function getPagesCount(posts, postsPerPage) {
+export async function getPagesCount(posts: any[], postsPerPage?: number) {
   const _postsPerPage = postsPerPage ?? (await getPostsPerPage())
   return Math.ceil(posts.length / _postsPerPage)
 }
@@ -404,10 +429,12 @@ export async function getPagesCount(posts, postsPerPage) {
 /**
  * getPaginatedPosts
  */
-
 export async function getPaginatedPosts({
   currentPage = 1,
   queryIncludes,
+}: {
+  currentPage?: number
+  queryIncludes?: keyof typeof allPostsIncludesTypes
 } = {}) {
   const { posts } = await getAllPosts({ queryIncludes })
   const postsPerPage = await getPostsPerPage()

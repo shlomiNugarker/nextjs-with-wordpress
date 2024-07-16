@@ -1,4 +1,4 @@
-import { getPaginatedPosts } from '@/lib/posts'
+import { getPaginatedPosts } from '../../lib/posts'
 
 export default async function Posts() {
   const { posts, pagination } = await getPaginatedPosts({

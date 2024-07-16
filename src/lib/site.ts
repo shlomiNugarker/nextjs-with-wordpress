@@ -120,7 +120,7 @@ export async function getSiteMetadata() {
     }
   }
 
-  settings.title = decodeHtmlEntities(settings.title)
+  settings.title = decodeHtmlEntities(settings.title || 'No title...')
 
   return settings
 }

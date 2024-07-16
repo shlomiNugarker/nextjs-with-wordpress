@@ -1,16 +1,16 @@
-import { ApolloClient, HttpLink, InMemoryCache } from '@apollo/client';
-import { removeLastTrailingSlash } from './util';
+import { ApolloClient, HttpLink, InMemoryCache } from '@apollo/client'
+import { removeLastTrailingSlash } from './util'
 
-let client: ApolloClient<any> | undefined;
+let client: ApolloClient<any> | undefined
 
 /**
  * getApolloClient
  */
 export function getApolloClient(): ApolloClient<any> {
   if (!client) {
-    client = _createApolloClient();
+    client = _createApolloClient()
   }
-  return client;
+  return client
 }
 
 /**
@@ -19,7 +19,9 @@ export function getApolloClient(): ApolloClient<any> {
 export function _createApolloClient(): ApolloClient<any> {
   return new ApolloClient({
     link: new HttpLink({
-      uri: removeLastTrailingSlash(process.env.WORDPRESS_GRAPHQL_ENDPOINT as string),
+      uri: removeLastTrailingSlash(
+        process.env.WORDPRESS_GRAPHQL_ENDPOINT as string
+      ),
     }),
     cache: new InMemoryCache({
       typePolicies: {
@@ -31,5 +33,5 @@ export function _createApolloClient(): ApolloClient<any> {
         },
       },
     }),
-  });
+  })
 }

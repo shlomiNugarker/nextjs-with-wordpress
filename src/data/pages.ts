@@ -1,4 +1,4 @@
-import { gql } from '@apollo/client';
+import { gql } from '@apollo/client'
 
 export const PAGE_FIELDS = gql`
   fragment PageFields on Page {
@@ -31,7 +31,7 @@ export const PAGE_FIELDS = gql`
     title
     uri
   }
-`;
+`
 
 export const QUERY_ALL_PAGES_INDEX = gql`
   ${PAGE_FIELDS}
@@ -44,7 +44,7 @@ export const QUERY_ALL_PAGES_INDEX = gql`
       }
     }
   }
-`;
+`
 
 export const QUERY_ALL_PAGES_ARCHIVE = gql`
   ${PAGE_FIELDS}
@@ -57,7 +57,7 @@ export const QUERY_ALL_PAGES_ARCHIVE = gql`
       }
     }
   }
-`;
+`
 
 export const QUERY_ALL_PAGES = gql`
   ${PAGE_FIELDS}
@@ -81,7 +81,7 @@ export const QUERY_ALL_PAGES = gql`
       }
     }
   }
-`;
+`
 
 export const QUERY_PAGE_BY_URI = gql`
   query PageByUri($uri: ID!) {
@@ -127,7 +127,7 @@ export const QUERY_PAGE_BY_URI = gql`
       uri
     }
   }
-`;
+`
 
 export const QUERY_PAGE_SEO_BY_URI = gql`
   query PageSEOByUri($uri: ID!) {
@@ -168,4 +168,4 @@ export const QUERY_PAGE_SEO_BY_URI = gql`
       }
     }
   }
-`;
+`

@@ -1,4 +1,4 @@
-import { gql } from '@apollo/client';
+import { gql } from '@apollo/client'
 
 export const QUERY_SITE_DATA = gql`
   query SiteData {
@@ -8,7 +8,7 @@ export const QUERY_SITE_DATA = gql`
       title
     }
   }
-`;
+`
 
 export const QUERY_SEO_DATA = gql`
   query SeoData {
@@ -57,4 +57,4 @@ export const QUERY_SEO_DATA = gql`
       }
     }
   }
-`;
+`

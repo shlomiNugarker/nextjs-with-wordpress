@@ -20,7 +20,7 @@ export default async function Post({
     date,
     author,
     isSticky = false,
-  } = post as any
+  } = post
 
   const { category: relatedCategory, posts: relatedPosts } =
     await getRelatedPosts(categories, postId)

@@ -5,7 +5,6 @@ import ThemeSwitcher from '@/layouts/components/ThemeSwitcher'
 
 export default async function Home() {
   const { posts, pagination } = await getPaginatedPosts({
-    // queryIncludes: 'archive',
     queryIncludes: 'all',
   })
   const basePath = '/posts'
@@ -19,13 +18,12 @@ export default async function Home() {
       <SeoMeta />
       <ThemeSwitcher className="mr-4 md:mr-6" />
       <main className="">
-        Hello nextjs,
+        posts:
         {posts.map((post) => (
           <Link key={post.title} href={postPathBySlug(post.slug)} rel="post">
             <div>{post.title}</div>
           </Link>
         ))}
-        fetched
       </main>
     </>
   )

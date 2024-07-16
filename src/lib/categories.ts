@@ -1,31 +1,76 @@
 import { getApolloClient } from './apollo-client'
-
 import {
   QUERY_ALL_CATEGORIES,
   QUERY_CATEGORY_BY_SLUG,
   QUERY_CATEGORY_SEO_BY_SLUG,
 } from '../data/categories'
+import { ApolloQueryResult } from '@apollo/client/core'
+
+// Define the types for your queries
+type CategoryNode = {
+  node: {
+    id: string
+    name: string
+    slug: string
+    [key: string]: any
+  }
+}
+
+type SeoData = {
+  title?: string
+  metaDesc?: string
+  canonical?: string
+  opengraphAuthor?: string
+  opengraphDescription?: string
+  opengraphImage?: string
+  opengraphModifiedTime?: string
+  opengraphPublishedTime?: string
+  opengraphPublisher?: string
+  opengraphTitle?: string
+  opengraphType?: string
+  metaRobotsNofollow?: string
+  metaRobotsNoindex?: string
+  twitterDescription?: string
+  twitterImage?: string
+  twitterTitle?: string
+  [key: string]: any
+}
+
+type CategoryData = {
+  id: string
+  name: string
+  slug: string
+  title?: string
+  description?: string
+  canonical?: string
+  og?: Record<string, any>
+  article?: Record<string, any>
+  robots?: Record<string, any>
+  twitter?: Record<string, any>
+  [key: string]: any
+}
 
 /**
  * categoryPathBySlug
  */
-
-export function categoryPathBySlug(slug) {
+export function categoryPathBySlug(slug: string): string {
   return `/categories/${slug}`
 }
 
 /**
  * getAllCategories
  */
-
-export async function getAllCategories() {
+export async function getAllCategories(): Promise<{
+  categories: CategoryNode[]
+}> {
   const apolloClient = getApolloClient()
 
-  const data = await apolloClient.query({
+  const { data }: ApolloQueryResult<any> = await apolloClient.query({
     query: QUERY_ALL_CATEGORIES,
   })
 
-  const categories = data?.data.categories.edges.map(({ node = {} }) => node)
+  const categories =
+    data?.categories?.edges.map(({ node }: CategoryNode) => node) || []
 
   return {
     categories,
@@ -35,13 +80,14 @@ export async function getAllCategories() {
 /**
  * getCategoryBySlug
  */
-
-export async function getCategoryBySlug(slug) {
+export async function getCategoryBySlug(
+  slug: string
+): Promise<{ category?: CategoryData }> {
   const apolloClient = getApolloClient()
-  const apiHost = new URL(process.env.WORDPRESS_GRAPHQL_ENDPOINT).host
+  const apiHost = new URL(process.env.WORDPRESS_GRAPHQL_ENDPOINT as string).host
 
-  let categoryData
-  let seoData
+  let categoryData: ApolloQueryResult<any>
+  let seoData: ApolloQueryResult<any> | undefined
 
   try {
     categoryData = await apolloClient.query({
@@ -52,19 +98,19 @@ export async function getCategoryBySlug(slug) {
     })
   } catch (e) {
     console.log(
-      `[categories][getCategoryBySlug] Failed to query category data: ${e.message}`
+      `[categories][getCategoryBySlug] Failed to query category data: ${
+        (e as Error).message
+      }`
     )
     throw e
   }
 
-  if (!categoryData?.data.category) return { category: undefined }
+  if (!categoryData?.data?.category) return { category: undefined }
 
-  const category = mapCategoryData(categoryData?.data.category)
+  const category = mapCategoryData(categoryData.data.category)
 
-  // If the SEO plugin is enabled, look up the data
-  // and apply it to the default settings
-
-  if (process.env.WORDPRESS_PLUGIN_SEO === true) {
+  // If the SEO plugin is enabled, look up the data and apply it to the default settings
+  if (process.env.WORDPRESS_PLUGIN_SEO === 'true') {
     try {
       seoData = await apolloClient.query({
         query: QUERY_CATEGORY_SEO_BY_SLUG,
@@ -74,7 +120,9 @@ export async function getCategoryBySlug(slug) {
       })
     } catch (e) {
       console.log(
-        `[categories][getCategoryBySlug] Failed to query SEO plugin: ${e.message}`
+        `[categories][getCategoryBySlug] Failed to query SEO plugin: ${
+          (e as Error).message
+        }`
       )
       console.log(
         'Is the SEO Plugin installed? If not, disable WORDPRESS_PLUGIN_SEO in next.config.js.'
@@ -82,7 +130,7 @@ export async function getCategoryBySlug(slug) {
       throw e
     }
 
-    const { seo = {} } = seoData?.data?.category || {}
+    const { seo = {} }: { seo: SeoData } = seoData?.data?.category || {}
 
     category.title = seo.title
     category.description = seo.metaDesc
@@ -134,8 +182,9 @@ export async function getCategoryBySlug(slug) {
 /**
  * getCategories
  */
-
-export async function getCategories({ count } = {}) {
+export async function getCategories({
+  count,
+}: { count?: number } = {}): Promise<{ categories: CategoryNode[] }> {
   const { categories } = await getAllCategories()
   return {
     categories: categories.slice(0, count),
@@ -145,8 +194,7 @@ export async function getCategories({ count } = {}) {
 /**
  * mapCategoryData
  */
-
-export function mapCategoryData(category = {}) {
-  const data = { ...category }
+export function mapCategoryData(category: any = {}): CategoryData {
+  const data: CategoryData = { ...category }
   return data
 }

@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { getPaginatedPosts, postPathBySlug } from '../lib/posts'
 import SeoMeta from '@/layouts/partials/SeoMeta'
+import ThemeSwitcher from '@/layouts/components/ThemeSwitcher'
 
 export default async function Home() {
   const { posts, pagination } = await getPaginatedPosts({
@@ -16,7 +17,7 @@ export default async function Home() {
   return (
     <>
       <SeoMeta />
-
+      <ThemeSwitcher className="mr-4 md:mr-6" />
       <main className="">
         Hello nextjs,
         {posts.map((post) => (

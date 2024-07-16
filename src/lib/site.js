@@ -1,36 +1,38 @@
-import { getApolloClient } from 'lib/apollo-client';
+import { getApolloClient } from './apollo-client'
 
-import { decodeHtmlEntities, removeExtraSpaces } from 'lib/util';
+import { decodeHtmlEntities, removeExtraSpaces } from 'lib/util'
 
-import { QUERY_SITE_DATA, QUERY_SEO_DATA } from 'data/site';
+import { QUERY_SITE_DATA, QUERY_SEO_DATA } from 'data/site'
 
 /**
  * getSiteMetadata
  */
 
 export async function getSiteMetadata() {
-  const apolloClient = getApolloClient();
+  const apolloClient = getApolloClient()
 
-  let siteData;
-  let seoData;
+  let siteData
+  let seoData
 
   try {
     siteData = await apolloClient.query({
       query: QUERY_SITE_DATA,
-    });
+    })
   } catch (e) {
-    console.log(`[site][getSiteMetadata] Failed to query site data: ${e.message}`);
-    throw e;
+    console.log(
+      `[site][getSiteMetadata] Failed to query site data: ${e.message}`
+    )
+    throw e
   }
 
-  const { generalSettings } = siteData?.data || {};
-  let { title, description, language } = generalSettings;
+  const { generalSettings } = siteData?.data || {}
+  let { title, description, language } = generalSettings
 
   const settings = {
     title,
     siteTitle: title,
     description,
-  };
+  }
 
   // It looks like the value of `language` when US English is set
   // in WordPress is empty or "", meaning, we have to infer that
@@ -39,9 +41,9 @@ export async function getSiteMetadata() {
   // the HTML lang attribute
 
   if (!language || language === '') {
-    settings.language = 'en';
+    settings.language = 'en'
   } else {
-    settings.language = language.split('_')[0];
+    settings.language = language.split('_')[0]
   }
 
   // If the SEO plugin is enabled, look up the data
@@ -51,62 +53,70 @@ export async function getSiteMetadata() {
     try {
       seoData = await apolloClient.query({
         query: QUERY_SEO_DATA,
-      });
+      })
     } catch (e) {
-      console.log(`[site][getSiteMetadata] Failed to query SEO plugin: ${e.message}`);
-      console.log('Is the SEO Plugin installed? If not, disable WORDPRESS_PLUGIN_SEO in next.config.js.');
-      throw e;
+      console.log(
+        `[site][getSiteMetadata] Failed to query SEO plugin: ${e.message}`
+      )
+      console.log(
+        'Is the SEO Plugin installed? If not, disable WORDPRESS_PLUGIN_SEO in next.config.js.'
+      )
+      throw e
     }
 
-    const { webmaster, social } = seoData?.data?.seo || {};
+    const { webmaster, social } = seoData?.data?.seo || {}
 
     if (social) {
-      settings.social = {};
+      settings.social = {}
 
       Object.keys(social).forEach((key) => {
-        const { url } = social[key];
-        if (!url || key === '__typename') return;
-        settings.social[key] = url;
-      });
+        const { url } = social[key]
+        if (!url || key === '__typename') return
+        settings.social[key] = url
+      })
     }
 
     if (webmaster) {
-      settings.webmaster = {};
+      settings.webmaster = {}
 
       Object.keys(webmaster).forEach((key) => {
-        if (!webmaster[key] || key === '__typename') return;
-        settings.webmaster[key] = webmaster[key];
-      });
+        if (!webmaster[key] || key === '__typename') return
+        settings.webmaster[key] = webmaster[key]
+      })
     }
 
     if (social.twitter) {
       settings.twitter = {
         username: social.twitter.username,
         cardType: social.twitter.cardType,
-      };
+      }
 
       settings.social.twitter = {
         url: `https://twitter.com/${settings.twitter.username}`,
-      };
+      }
     }
   }
 
-  settings.title = decodeHtmlEntities(settings.title);
+  settings.title = decodeHtmlEntities(settings.title)
 
-  return settings;
+  return settings
 }
 
 /**
  * constructHelmetData
  */
 
-export function constructPageMetadata(defaultMetadata = {}, pageMetadata = {}, options = {}) {
-  const { router = {}, homepage = '' } = options;
-  const { asPath } = router;
+export function constructPageMetadata(
+  defaultMetadata = {},
+  pageMetadata = {},
+  options = {}
+) {
+  const { router = {}, homepage = '' } = options
+  const { asPath } = router
 
-  const url = `${homepage}${asPath}`;
-  const pathname = new URL(url).pathname;
-  const canonical = pageMetadata.canonical || `${homepage}${pathname}`;
+  const url = `${homepage}${asPath}`
+  const pathname = new URL(url).pathname
+  const canonical = pageMetadata.canonical || `${homepage}${pathname}`
 
   const metadata = {
     canonical,
@@ -114,75 +124,97 @@ export function constructPageMetadata(defaultMetadata = {}, pageMetadata = {}, o
       url,
     },
     twitter: {},
-  };
+  }
 
   // Static Properties
   // Loop through top level metadata properties that rely on a non-object value
 
-  const staticProperties = ['description', 'language', 'title'];
+  const staticProperties = ['description', 'language', 'title']
 
   staticProperties.forEach((property) => {
-    const value = typeof pageMetadata[property] !== 'undefined' ? pageMetadata[property] : defaultMetadata[property];
+    const value =
+      typeof pageMetadata[property] !== 'undefined'
+        ? pageMetadata[property]
+        : defaultMetadata[property]
 
-    if (typeof value === 'undefined') return;
+    if (typeof value === 'undefined') return
 
-    metadata[property] = value;
-  });
+    metadata[property] = value
+  })
 
   // Open Graph Properties
   // Loop through Open Graph properties that rely on a non-object value
 
   if (pageMetadata.og) {
-    const ogProperties = ['description', 'imageUrl', 'imageHeight', 'imageSecureUrl', 'imageWidth', 'title', 'type'];
+    const ogProperties = [
+      'description',
+      'imageUrl',
+      'imageHeight',
+      'imageSecureUrl',
+      'imageWidth',
+      'title',
+      'type',
+    ]
 
     ogProperties.forEach((property) => {
-      const pageOg = pageMetadata.og?.[property];
-      const pageStatic = pageMetadata[property];
-      const defaultOg = defaultMetadata.og?.[property];
-      const defaultStatic = defaultMetadata[property];
-      const value = pageOg || pageStatic || defaultOg || defaultStatic;
+      const pageOg = pageMetadata.og?.[property]
+      const pageStatic = pageMetadata[property]
+      const defaultOg = defaultMetadata.og?.[property]
+      const defaultStatic = defaultMetadata[property]
+      const value = pageOg || pageStatic || defaultOg || defaultStatic
 
-      if (typeof value === 'undefined') return;
+      if (typeof value === 'undefined') return
 
-      metadata.og[property] = value;
-    });
+      metadata.og[property] = value
+    })
   }
 
   // Twitter Properties
   // Loop through Twitter properties that rely on a non-object value
 
   if (pageMetadata.twitter) {
-    const twitterProperties = ['cardType', 'description', 'imageUrl', 'title', 'username'];
+    const twitterProperties = [
+      'cardType',
+      'description',
+      'imageUrl',
+      'title',
+      'username',
+    ]
 
     twitterProperties.forEach((property) => {
-      const pageTwitter = pageMetadata.twitter?.[property];
-      const pageOg = metadata.og[property];
-      const value = pageTwitter || pageOg;
+      const pageTwitter = pageMetadata.twitter?.[property]
+      const pageOg = metadata.og[property]
+      const value = pageTwitter || pageOg
 
-      if (typeof value === 'undefined') return;
+      if (typeof value === 'undefined') return
 
-      metadata.twitter[property] = value;
-    });
+      metadata.twitter[property] = value
+    })
   }
 
   // Article Properties
   // Loop through article properties that rely on a non-object value
 
   if (metadata.og.type === 'article' && pageMetadata.article) {
-    metadata.article = {};
+    metadata.article = {}
 
-    const articleProperties = ['author', 'modifiedTime', 'publishedTime', 'publisher'];
+    const articleProperties = [
+      'author',
+      'modifiedTime',
+      'publishedTime',
+      'publisher',
+    ]
 
     articleProperties.forEach((property) => {
-      const value = pageMetadata.article[property];
+      const value = pageMetadata.article[property]
 
-      if (typeof value === 'undefined') return;
+      if (typeof value === 'undefined') return
 
-      metadata.article[property] = value;
-    });
+      metadata.article[property] = value
+    })
   }
 
-  return metadata;
+  return metadata
 }
 
 /**
@@ -190,18 +222,18 @@ export function constructPageMetadata(defaultMetadata = {}, pageMetadata = {}, o
  */
 
 export function helmetSettingsFromMetadata(metadata = {}, options = {}) {
-  const { link = [], meta = [], setTitle = true } = options;
+  const { link = [], meta = [], setTitle = true } = options
 
-  const sanitizedDescription = removeExtraSpaces(metadata.description);
+  const sanitizedDescription = removeExtraSpaces(metadata.description)
 
   const settings = {
     htmlAttributes: {
       lang: metadata.language,
     },
-  };
+  }
 
   if (setTitle) {
-    settings.title = metadata.title;
+    settings.title = metadata.title
   }
 
   settings.link = [
@@ -210,7 +242,7 @@ export function helmetSettingsFromMetadata(metadata = {}, options = {}) {
       rel: 'canonical',
       href: metadata.canonical,
     },
-  ].filter(({ href } = {}) => !!href);
+  ].filter(({ href } = {}) => !!href)
 
   settings.meta = [
     ...meta,
@@ -260,7 +292,10 @@ export function helmetSettingsFromMetadata(metadata = {}, options = {}) {
     },
     {
       property: 'twitter:description',
-      content: metadata.twitter?.description || metadata.og?.description || sanitizedDescription,
+      content:
+        metadata.twitter?.description ||
+        metadata.og?.description ||
+        sanitizedDescription,
     },
     {
       property: 'twitter:image',
@@ -282,7 +317,7 @@ export function helmetSettingsFromMetadata(metadata = {}, options = {}) {
       property: 'article:published_time',
       content: metadata.article?.publishedTime,
     },
-  ].filter(({ content } = {}) => !!content);
+  ].filter(({ content } = {}) => !!content)
 
-  return settings;
+  return settings
 }

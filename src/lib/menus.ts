@@ -1,13 +1,12 @@
 import { getApolloClient } from './apollo-client'
-import { getTopLevelPages } from 'lib/pages'
-import { QUERY_ALL_MENUS } from 'data/menus'
+import { getTopLevelPages } from './pages'
+import { QUERY_ALL_MENUS } from '../data/menus'
 
 export const MENU_LOCATION_NAVIGATION_DEFAULT = 'DEFAULT_NAVIGATION'
 
 /**
  * getAllMenus
  */
-
 export async function getAllMenus() {
   const apolloClient = getApolloClient()
 
@@ -34,13 +33,30 @@ export async function getAllMenus() {
 /**
  * mapMenuData
  */
+interface MenuItemNode {
+  id: string
+  uri: string
+  title: string
+}
 
-export function mapMenuData(menu = {}) {
+interface MenuNode {
+  id: string
+  menuItems: {
+    edges: { node: MenuItemNode }[]
+  }
+  locations: string[]
+}
+
+interface Menu {
+  node: MenuNode
+}
+
+export function mapMenuData(menu: Menu) {
   const { node } = menu
   const data = { ...node }
 
-  data.menuItems = data.menuItems.edges.map(({ node }) => {
-    return { ...node }
+  data.menuItems.edges = data.menuItems.edges.map(({ node }) => {
+    return { node }
   })
 
   return data
@@ -49,8 +65,19 @@ export function mapMenuData(menu = {}) {
 /**
  * mapPagesToMenuItems
  */
+interface Page {
+  id: string
+  uri: string
+  title: string
+}
 
-export function mapPagesToMenuItems(pages) {
+interface MenuItem {
+  label: string
+  path: string
+  id: string
+}
+
+export function mapPagesToMenuItems(pages: Page[]): MenuItem[] {
   return pages.map(({ id, uri, title }) => {
     return {
       label: title,
@@ -63,8 +90,15 @@ export function mapPagesToMenuItems(pages) {
 /**
  * createMenuFromPages
  */
+interface CreateMenuFromPagesParams {
+  locations: string[]
+  pages: Page[]
+}
 
-export function createMenuFromPages({ locations, pages }) {
+export function createMenuFromPages({
+  locations,
+  pages,
+}: CreateMenuFromPagesParams) {
   return {
     menuItems: mapPagesToMenuItems(pages),
     locations,
@@ -74,12 +108,22 @@ export function createMenuFromPages({ locations, pages }) {
 /**
  * parseHierarchicalMenu
  */
+interface ParseHierarchicalMenuOptions {
+  idKey?: string
+  parentKey?: string
+  childrenKey?: string
+}
+
 export const parseHierarchicalMenu = (
-  data = [],
-  { idKey = 'id', parentKey = 'parentId', childrenKey = 'children' } = {}
+  data: any[] = [],
+  {
+    idKey = 'id',
+    parentKey = 'parentId',
+    childrenKey = 'children',
+  }: ParseHierarchicalMenuOptions = {}
 ) => {
-  const tree = []
-  const childrenOf = {}
+  const tree: any[] = []
+  const childrenOf: { [key: string]: any[] } = {}
 
   data.forEach((item) => {
     const newItem = { ...item }
@@ -96,8 +140,15 @@ export const parseHierarchicalMenu = (
 /**
  * findMenuByLocation
  */
+interface MenuWithLocation {
+  locations: string[]
+  menuItems: any[]
+}
 
-export function findMenuByLocation(menus, location) {
+export function findMenuByLocation(
+  menus: MenuWithLocation[],
+  location: string
+) {
   if (typeof location !== 'string') {
     throw new Error(
       'Failed to find menu by location - location is not a string.'

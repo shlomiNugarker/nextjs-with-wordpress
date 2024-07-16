@@ -1,28 +1,47 @@
 import { getApolloClient } from './apollo-client'
-
 import {
   QUERY_ALL_PAGES_INDEX,
   QUERY_ALL_PAGES_ARCHIVE,
   QUERY_ALL_PAGES,
   QUERY_PAGE_BY_URI,
   QUERY_PAGE_SEO_BY_URI,
-} from 'data/pages'
+} from '../data/pages'
 
 /**
  * pagePathBySlug
  */
-
-export function pagePathBySlug(slug) {
+export function pagePathBySlug(slug: string): string {
   return `/${slug}`
 }
 
 /**
  * getPageByUri
  */
+interface PageData {
+  id: string
+  uri: string
+  title: string
+  featuredImage?: { node: { sourceUrl: string } }
+  parent?: { node: any }
+  children?: { edges: { node: any }[] }
+  seo?: any
+  metaTitle?: string
+  description?: string
+  readingTime?: string
+  canonical?: string
+  og?: any
+  robots?: any
+  twitter?: any
+  menuOrder?: any
+}
 
-export async function getPageByUri(uri) {
+interface GetPageByUriResult {
+  page?: PageData
+}
+
+export async function getPageByUri(uri: string): Promise<GetPageByUriResult> {
   const apolloClient = getApolloClient()
-  const apiHost = new URL(process.env.WORDPRESS_GRAPHQL_ENDPOINT).host
+  const apiHost = new URL(process.env.WORDPRESS_GRAPHQL_ENDPOINT!).host
 
   let pageData
   let seoData
@@ -30,11 +49,9 @@ export async function getPageByUri(uri) {
   try {
     pageData = await apolloClient.query({
       query: QUERY_PAGE_BY_URI,
-      variables: {
-        uri,
-      },
+      variables: { uri },
     })
-  } catch (e) {
+  } catch (e: any) {
     console.log(`[pages][getPageByUri] Failed to query page data: ${e.message}`)
     throw e
   }
@@ -43,18 +60,14 @@ export async function getPageByUri(uri) {
 
   const page = [pageData?.data.page].map(mapPageData)[0]
 
-  // If the SEO plugin is enabled, look up the data
-  // and apply it to the default settings
-
-  if (process.env.WORDPRESS_PLUGIN_SEO === true) {
+  // If the SEO plugin is enabled, look up the data and apply it to the default settings
+  if (process.env.WORDPRESS_PLUGIN_SEO === 'true') {
     try {
       seoData = await apolloClient.query({
         query: QUERY_PAGE_SEO_BY_URI,
-        variables: {
-          uri,
-        },
+        variables: { uri },
       })
-    } catch (e) {
+    } catch (e: any) {
       console.log(
         `[pages][getPageByUri] Failed to query SEO plugin: ${e.message}`
       )
@@ -69,11 +82,6 @@ export async function getPageByUri(uri) {
     page.metaTitle = seo.title
     page.description = seo.metaDesc
     page.readingTime = seo.readingTime
-
-    // The SEO plugin by default includes a canonical link, but we don't want to use that
-    // because it includes the WordPress host, not the site host. We manage the canonical
-    // link along with the other metadata, but explicitly check if there's a custom one
-    // in here by looking for the API's host in the provided canonical link
 
     if (seo.canonical && !seo.canonical.includes(apiHost)) {
       page.canonical = seo.canonical
@@ -102,24 +110,30 @@ export async function getPageByUri(uri) {
     }
   }
 
-  return {
-    page,
-  }
+  return { page }
 }
 
 /**
  * getAllPages
  */
-
 const allPagesIncludesTypes = {
   all: QUERY_ALL_PAGES,
   archive: QUERY_ALL_PAGES_ARCHIVE,
   index: QUERY_ALL_PAGES_INDEX,
 }
 
-export async function getAllPages(options = {}) {
-  const { queryIncludes = 'index' } = options
+interface GetAllPagesOptions {
+  queryIncludes?: 'all' | 'archive' | 'index'
+}
 
+interface GetAllPagesResult {
+  pages: PageData[]
+}
+
+export async function getAllPages(
+  options: GetAllPagesOptions = {}
+): Promise<GetAllPagesResult> {
+  const { queryIncludes = 'index' } = options
   const apolloClient = getApolloClient()
 
   const data = await apolloClient.query({
@@ -130,35 +144,29 @@ export async function getAllPages(options = {}) {
     .map(({ node = {} }) => node)
     .map(mapPageData)
 
-  return {
-    pages,
-  }
+  return { pages }
 }
 
 /**
  * getTopLevelPages
  */
+interface GetTopLevelPagesOptions extends GetAllPagesOptions {}
 
-export async function getTopLevelPages(options) {
+export async function getTopLevelPages(options: GetTopLevelPagesOptions) {
   const { pages } = await getAllPages(options)
-
   const navPages = pages.filter(({ parent }) => parent === null)
-
-  // Order pages by menuOrder
   navPages.sort((a, b) => parseFloat(a.menuOrder) - parseFloat(b.menuOrder))
-
   return navPages
 }
 
 /**
  * mapPageData
  */
-
-export function mapPageData(page = {}) {
+export function mapPageData(page: PageData): PageData {
   const data = { ...page }
 
   if (data.featuredImage) {
-    data.featuredImage = data.featuredImage.node
+    data.featuredImage = data.featuredImage
   }
 
   if (data.parent) {
@@ -166,7 +174,7 @@ export function mapPageData(page = {}) {
   }
 
   if (data.children) {
-    data.children = data.children.edges.map(({ node }) => node)
+    data.children = { edges: data.children.edges.map(({ node }) => node) }
   }
 
   return data
@@ -175,26 +183,24 @@ export function mapPageData(page = {}) {
 /**
  * getBreadcrumbsByUri
  */
+interface Breadcrumb {
+  id: string
+  title: string
+  uri: string
+}
 
-export function getBreadcrumbsByUri(uri, pages) {
-  const breadcrumbs = []
+export function getBreadcrumbsByUri(
+  uri: string,
+  pages: PageData[]
+): Breadcrumb[] {
+  const breadcrumbs: Breadcrumb[] = []
   const uriSegments = uri.split('/').filter((segment) => segment !== '')
-
-  // We don't want to show the current page in the breadcrumbs, so pop off
-  // the last chunk before we start
-
   uriSegments.pop()
-
-  // Work through each of the segments, popping off the last chunk and finding the related
-  // page to gather the metadata for the breadcrumbs
 
   do {
     const breadcrumb = pages.find(
       (page) => page.uri === `/${uriSegments.join('/')}/`
     )
-
-    // If the breadcrumb is the active page, we want to pass udefined for the uri to
-    // avoid the breadcrumbs being rendered as a link, given it's the current page
 
     if (breadcrumb) {
       breadcrumbs.push({
@@ -207,11 +213,6 @@ export function getBreadcrumbsByUri(uri, pages) {
     uriSegments.pop()
   } while (uriSegments.length > 0)
 
-  // When working through the segments, we're doing so from the lowest child to the parent
-  // which means the parent will be at the end of the array. We need to reverse to show
-  // the correct order for breadcrumbs
-
   breadcrumbs.reverse()
-
   return breadcrumbs
 }

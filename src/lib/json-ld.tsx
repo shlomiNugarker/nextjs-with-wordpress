@@ -1,22 +1,55 @@
-import { Helmet } from 'react-helmet';
+import { Helmet } from 'react-helmet'
+import { authorPathByName } from './users'
+import { postPathBySlug } from './posts'
+import { pagePathBySlug } from './pages'
+import config from '../../package.json'
 
-import { authorPathByName } from 'lib/users';
-import { postPathBySlug } from 'lib/posts';
-import { pagePathBySlug } from 'lib/pages';
+interface Post {
+  title?: string
+  slug?: string
+  excerpt?: string
+  date?: string
+  author?: {
+    name?: string
+  }
+  categories?: { name: string }[]
+  modified?: string
+  featuredImage?: {
+    sourceUrl?: string
+  }
+}
 
-import config from '../../package.json';
+interface Author {
+  name?: string
+  avatar?: {
+    url?: string
+  }
+  description?: string
+}
 
-export function ArticleJsonLd({ post = {}, siteTitle = '' }) {
-  const { homepage = '', faviconPath = '/favicon.ico' } = config;
-  const { title, slug, excerpt, date, author, categories, modified, featuredImage } = post;
-  const path = postPathBySlug(slug);
-  const datePublished = !!date && new Date(date);
-  const dateModified = !!modified && new Date(modified);
+interface ArticleJsonLdProps {
+  post?: Post
+  siteTitle?: string
+}
 
-  /** TODO - As image is a recommended field would be interesting to have a
-   * default image in case there is no featuredImage comming from WP,
-   * like the open graph social image
-   * */
+export function ArticleJsonLd({
+  post = {},
+  siteTitle = '',
+}: ArticleJsonLdProps) {
+  const { homepage = '', faviconPath = '/favicon.ico' } = config as any
+  const {
+    title,
+    slug,
+    excerpt,
+    date,
+    author,
+    categories = [],
+    modified,
+    featuredImage,
+  } = post
+  const path = postPathBySlug(slug || '')
+  const datePublished = date ? new Date(date) : null
+  const dateModified = modified ? new Date(modified) : datePublished
 
   const jsonLd = {
     '@context': 'https://schema.org',
@@ -28,9 +61,9 @@ export function ArticleJsonLd({ post = {}, siteTitle = '' }) {
     headline: title,
     image: [featuredImage?.sourceUrl],
     datePublished: datePublished ? datePublished.toISOString() : '',
-    dateModified: dateModified ? dateModified.toISOString() : datePublished.toISOString(),
+    dateModified: dateModified ? dateModified.toISOString() : '',
     description: excerpt,
-    keywords: [categories.map(({ name }) => `${name}`).join(', ')],
+    keywords: categories.map(({ name }) => name).join(', '),
     copyrightYear: datePublished ? datePublished.getFullYear() : '',
     author: {
       '@type': 'Person',
@@ -44,17 +77,21 @@ export function ArticleJsonLd({ post = {}, siteTitle = '' }) {
         url: `${homepage}${faviconPath}`,
       },
     },
-  };
+  }
 
   return (
     <Helmet encodeSpecialCharacters={false}>
       <script type="application/ld+json">{JSON.stringify(jsonLd)}</script>
     </Helmet>
-  );
+  )
 }
 
-export function WebsiteJsonLd({ siteTitle = '' }) {
-  const { homepage = '' } = config;
+interface WebsiteJsonLdProps {
+  siteTitle?: string
+}
+
+export function WebsiteJsonLd({ siteTitle = '' }: WebsiteJsonLdProps) {
+  const { homepage = '' } = config as any
 
   const jsonLd = {
     '@context': 'https://schema.org',
@@ -67,18 +104,30 @@ export function WebsiteJsonLd({ siteTitle = '' }) {
       target: `${homepage}/search/?q={search_term_string}`,
       'query-input': 'required name=search_term_string',
     },
-  };
+  }
 
   return (
     <Helmet encodeSpecialCharacters={false}>
       <script type="application/ld+json">{JSON.stringify(jsonLd)}</script>
     </Helmet>
-  );
+  )
 }
 
-export function WebpageJsonLd({ title = '', description = '', siteTitle = '', slug = '' }) {
-  const { homepage = '' } = config;
-  const path = pagePathBySlug(slug);
+interface WebpageJsonLdProps {
+  title?: string
+  description?: string
+  siteTitle?: string
+  slug?: string
+}
+
+export function WebpageJsonLd({
+  title = '',
+  description = '',
+  siteTitle = '',
+  slug = '',
+}: WebpageJsonLdProps) {
+  const { homepage = '' } = config as any
+  const path = pagePathBySlug(slug)
 
   const jsonLd = {
     '@context': 'http://schema.org',
@@ -90,19 +139,23 @@ export function WebpageJsonLd({ title = '', description = '', siteTitle = '', sl
       '@type': 'ProfilePage',
       name: siteTitle,
     },
-  };
+  }
 
   return (
     <Helmet encodeSpecialCharacters={false}>
       <script type="application/ld+json">{JSON.stringify(jsonLd)}</script>
     </Helmet>
-  );
+  )
 }
 
-export function AuthorJsonLd({ author = {} }) {
-  const { homepage = '' } = config;
-  const { name, avatar, description } = author;
-  const path = authorPathByName(name);
+interface AuthorJsonLdProps {
+  author?: Author
+}
+
+export function AuthorJsonLd({ author = {} }: AuthorJsonLdProps) {
+  const { homepage = '' } = config as any
+  const { name, avatar, description } = author
+  const path = authorPathByName(name || '')
 
   const jsonLd = {
     '@context': 'https://schema.org',
@@ -111,28 +164,28 @@ export function AuthorJsonLd({ author = {} }) {
     image: avatar?.url,
     url: `${homepage}${path}`,
     description: description,
-  };
+  }
 
   return (
     <Helmet encodeSpecialCharacters={false}>
       <script type="application/ld+json">{JSON.stringify(jsonLd)}</script>
     </Helmet>
-  );
+  )
 }
 
 export function LogoJsonLd() {
-  const { homepage = '', faviconPath = '/favicon.ico' } = config;
+  const { homepage = '', faviconPath = '/favicon.ico' } = config as any
 
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'Organization',
     url: `${homepage}`,
     logo: `${homepage}${faviconPath}`,
-  };
+  }
 
   return (
     <Helmet encodeSpecialCharacters={false}>
       <script type="application/ld+json">{JSON.stringify(jsonLd)}</script>
     </Helmet>
-  );
+  )
 }

@@ -1,6 +1,6 @@
 'use client'
 
-import config from '../../app/config/config.json'
+import config from '../../config/config.json'
 import { plainify } from '@/lib/utils/textConverter'
 import { usePathname } from 'next/navigation'
 

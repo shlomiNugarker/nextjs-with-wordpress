@@ -1,6 +1,6 @@
 'use client'
 
-import config from '../../app/config/config.json'
+import config from '../../config/config.json'
 import { useTheme } from 'next-themes'
 import { useEffect, useState } from 'react'
 

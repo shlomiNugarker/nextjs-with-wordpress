@@ -1,9 +1,10 @@
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import '../styles/main.scss'
-import theme from './config/theme.json'
-import config from './config/config.json'
+import theme from '../config/theme.json'
+import config from '../config/config.json'
 import Providers from '@/layouts/partials/Providers'
+import { Header } from '@/layouts/partials/Header'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -59,7 +60,10 @@ export default function RootLayout({
         />
       </head>
       <body className={inter.className}>
-        <Providers>{children}</Providers>
+        <Providers>
+          <Header />
+          {children}
+        </Providers>
       </body>
     </html>
   )

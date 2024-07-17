@@ -1,4 +1,4 @@
-import theme from './src/app/config/theme.json'
+import theme from './src/config/theme.json'
 
 let font_base = Number(theme.fonts.font_size.base.replace('px', ''))
 let font_scale = Number(theme.fonts.font_size.scale)

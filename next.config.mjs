@@ -1,4 +1,4 @@
-import config from './src/app/config/config.json' assert { type: 'json' }
+import config from './src/config/config.json' assert { type: 'json' }
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {

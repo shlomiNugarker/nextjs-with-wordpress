@@ -1,4 +1,9 @@
-import { ApolloClient, HttpLink, InMemoryCache } from '@apollo/client'
+import {
+  ApolloClient,
+  DefaultOptions,
+  HttpLink,
+  InMemoryCache,
+} from '@apollo/client'
 import { removeLastTrailingSlash } from './util'
 
 let client: ApolloClient<any> | undefined
@@ -17,21 +22,24 @@ export function getApolloClient(): ApolloClient<any> {
  * createApolloClient
  */
 export function _createApolloClient(): ApolloClient<any> {
+  const defaultOptions: DefaultOptions = {
+    watchQuery: {
+      fetchPolicy: 'no-cache',
+      errorPolicy: 'ignore',
+    },
+    query: {
+      fetchPolicy: 'no-cache',
+      errorPolicy: 'all',
+    },
+  }
+
   return new ApolloClient({
     link: new HttpLink({
       uri: removeLastTrailingSlash(
         process.env.WORDPRESS_GRAPHQL_ENDPOINT as string
       ),
     }),
-    cache: new InMemoryCache({
-      typePolicies: {
-        RootQuery: {
-          queryType: true,
-        },
-        RootMutation: {
-          mutationType: true,
-        },
-      },
-    }),
+    cache: new InMemoryCache(),
+    defaultOptions,
   })
 }

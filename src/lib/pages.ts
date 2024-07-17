@@ -6,6 +6,7 @@ import {
   QUERY_PAGE_BY_URI,
   QUERY_PAGE_SEO_BY_URI,
 } from '../data/pages'
+import { ApolloQueryResult } from '@apollo/client'
 
 /**
  * pagePathBySlug
@@ -33,18 +34,15 @@ interface PageData {
   robots?: any
   twitter?: any
   menuOrder?: any
+  content: any
 }
 
-interface GetPageByUriResult {
-  page?: PageData
-}
-
-export async function getPageByUri(uri: string): Promise<GetPageByUriResult> {
+export async function getPageByUri(uri: string) {
   const apolloClient = getApolloClient()
   const apiHost = new URL(process.env.WORDPRESS_GRAPHQL_ENDPOINT!).host
 
-  let pageData
-  let seoData
+  let pageData: ApolloQueryResult<any>
+  let seoData: ApolloQueryResult<any>
 
   try {
     pageData = await apolloClient.query({

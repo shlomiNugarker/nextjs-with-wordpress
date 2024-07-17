@@ -40,6 +40,11 @@ export default async function Post({
             {author.name}
           </Link>
         </section>
+        <div
+          dangerouslySetInnerHTML={{
+            __html: post.content,
+          }}
+        />{' '}
       </div>
     </main>
   )

@@ -8,9 +8,6 @@ import { removeLastTrailingSlash } from './util'
 
 let client: ApolloClient<any> | undefined
 
-/**
- * getApolloClient
- */
 export function getApolloClient(): ApolloClient<any> {
   if (!client) {
     client = _createApolloClient()
@@ -18,9 +15,6 @@ export function getApolloClient(): ApolloClient<any> {
   return client
 }
 
-/**
- * createApolloClient
- */
 export function _createApolloClient(): ApolloClient<any> {
   const defaultOptions: DefaultOptions = {
     watchQuery: {

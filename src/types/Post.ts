@@ -1,11 +1,8 @@
 interface Author {
-  node: {
-    id: string
-    name: string
-    slug: string
-    description: string | null
-    __typename: string
-  }
+  id: string
+  name: string
+  slug: string
+  description: string | null
   __typename: string
 }
 
@@ -37,6 +34,7 @@ interface Post {
   date: string
   modified: string
   status: string
+  isSticky: boolean
   author: { node: Author }
   categories: { nodes: Category[]; __typename: string }
   tags: { nodes: Tag[]; __typename: string }

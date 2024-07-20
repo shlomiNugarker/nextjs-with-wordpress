@@ -1,55 +1,25 @@
-import { gql } from '@apollo/client';
+import { gql } from '@apollo/client'
 
-export const QUERY_ALL_USERS = gql`
-  query AllUsers {
-    users(first: 10000) {
-      edges {
-        node {
-          avatar {
-            height
-            width
-            url
+export const GET_ALL_USERS = gql`
+  query GetAllUsers {
+    users {
+      nodes {
+        id
+        name
+        email
+        slug
+        description
+        roles {
+          nodes {
+            name
           }
-          description
-          id
-          name
-          roles {
-            nodes {
-              name
-            }
-          }
-          slug
+        }
+        avatar {
+          height
+          width
+          url
         }
       }
     }
   }
-`;
-
-export const QUERY_ALL_USERS_SEO = gql`
-  query AllUsersSeo {
-    users(first: 10000) {
-      edges {
-        node {
-          id
-          seo {
-            metaDesc
-            metaRobotsNofollow
-            metaRobotsNoindex
-            title
-            social {
-              youTube
-              wikipedia
-              twitter
-              soundCloud
-              pinterest
-              mySpace
-              linkedIn
-              instagram
-              facebook
-            }
-          }
-        }
-      }
-    }
-  }
-`;
+`

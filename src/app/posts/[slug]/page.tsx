@@ -14,6 +14,7 @@ export default async function Post({
   return (
     <div>
       <h1>{post.title}</h1>
+      <Link href={'/authors/' + post?.author.node.slug}>go to author</Link>
       <div
         dangerouslySetInnerHTML={{
           __html: post.content,

@@ -12,6 +12,7 @@ export const GET_ALL_POSTS = gql`
         date
         modified
         status
+        isSticky
         author {
           node {
             id
@@ -87,6 +88,7 @@ export const GET_POST_BY_SLUG = gql`
       date
       modified
       status
+      isSticky
       author {
         node {
           id
@@ -135,6 +137,18 @@ export const GET_POST_BY_SLUG = gql`
             }
           }
         }
+      }
+    }
+  }
+`
+
+export const GET_POSTS_BY_AUTHOR_SLUG = gql`
+  query GetPostsByAuthorSlug($slug: String!) {
+    posts(where: { authorName: $slug }) {
+      nodes {
+        id
+        title
+        slug
       }
     }
   }

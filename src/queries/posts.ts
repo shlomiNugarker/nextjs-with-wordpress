@@ -139,3 +139,15 @@ export const GET_POST_BY_SLUG = gql`
     }
   }
 `
+
+export const GET_POSTS_BY_CATEGORY_ID = gql`
+  query PostsByCategoryId($categoryId: Int!) {
+    posts(where: { categoryId: $categoryId, hasPassword: false }) {
+      nodes {
+        id
+        title
+        slug
+      }
+    }
+  }
+`

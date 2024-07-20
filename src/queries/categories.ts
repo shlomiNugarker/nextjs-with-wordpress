@@ -12,3 +12,13 @@ export const GET_ALL_CATEGORIES = gql`
     }
   }
 `
+export const GET_CATEGORY_BY_SLUG = gql`
+  query GetCategoryBySlug($slug: ID!) {
+    category(id: $slug, idType: SLUG) {
+      databaseId
+      id
+      name
+      slug
+    }
+  }
+`

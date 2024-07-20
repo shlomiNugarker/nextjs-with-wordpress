@@ -62,6 +62,13 @@ interface RootQueryToPostsConnection {
   __typename: string
 }
 
+interface RootQueryToPostsByCategoryIDConnection {
+  posts: {
+    nodes: { id: string; title: string; slug: string; __typename: 'Post' }[]
+  }
+  __typename: 'RootQueryToPostConnection'
+}
+
 interface RootQueryToPostConnection {
   postBy: Post
   __typename: string

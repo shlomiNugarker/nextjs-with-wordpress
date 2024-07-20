@@ -2,6 +2,7 @@ import {
   GET_ALL_POSTS,
   GET_ALL_POSTS_SLUGS,
   GET_POST_BY_SLUG,
+  GET_POSTS_BY_CATEGORY_ID,
 } from '@/queries/posts'
 import { getApolloClient } from './apollo-client'
 
@@ -43,6 +44,25 @@ export async function getPostBySlug(slug: string) {
     })
 
     return data.postBy
+  } catch (err) {
+    console.log(err)
+  }
+}
+
+export async function getPostsByCategoryId(categoryId: number) {
+  try {
+    const client = getApolloClient()
+    const { data }: { data: RootQueryToPostsByCategoryIDConnection } =
+      await client.query({
+        query: GET_POSTS_BY_CATEGORY_ID,
+        variables: {
+          categoryId,
+        },
+      })
+
+    console.log(data)
+
+    return data.posts.nodes
   } catch (err) {
     console.log(err)
   }

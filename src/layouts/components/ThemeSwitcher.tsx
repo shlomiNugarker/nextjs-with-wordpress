@@ -4,7 +4,7 @@ import config from '../../config/config.json'
 import { useTheme } from 'next-themes'
 import { useEffect, useState } from 'react'
 
-const ThemeSwitcher = ({ className }: { className: string }) => {
+const ThemeSwitcher = () => {
   const { theme_switcher } = config.settings
   const [mounted, setMounted] = useState(false)
   const { theme, setTheme, resolvedTheme } = useTheme()
@@ -14,7 +14,7 @@ const ThemeSwitcher = ({ className }: { className: string }) => {
     <>
       <span>Theme switcher: </span>
       {theme_switcher && (
-        <span className={`theme-switcher ${className}`}>
+        <span>
           <input
             id="theme-switcher"
             type="checkbox"

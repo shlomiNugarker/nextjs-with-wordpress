@@ -70,9 +70,9 @@ export const GET_ALL_POSTS_SLUGS = gql`
   query GetAllPosts {
     posts {
       nodes {
-        id
-        title
         slug
+        title
+        id
       }
     }
   }
@@ -146,9 +146,9 @@ export const GET_POSTS_BY_AUTHOR_SLUG = gql`
   query GetPostsByAuthorSlug($slug: String!) {
     posts(where: { authorName: $slug }) {
       nodes {
-        id
-        title
         slug
+        title
+        id
       }
     }
   }

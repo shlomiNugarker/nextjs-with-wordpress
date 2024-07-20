@@ -10,7 +10,7 @@ export default async function Posts() {
         {posts.map((post) => (
           <li key={post.id}>
             <h5>{post.title}</h5>
-            {/* <div dangerouslySetInnerHTML={{ __html: post.content }} /> */}
+            <div dangerouslySetInnerHTML={{ __html: post.content }} />
           </li>
         ))}
       </ul>

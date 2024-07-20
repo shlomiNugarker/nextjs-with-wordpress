@@ -1,6 +1,3 @@
-/**
- * decodeHtmlEntities
- */
 export function decodeHtmlEntities(text: string) {
   if (typeof text !== 'string') {
     throw new Error(`Failed to decode HTML entity: invalid type ${typeof text}`)
@@ -17,17 +14,11 @@ export function decodeHtmlEntities(text: string) {
   return decoded.replace(/&amp;|&quot;|&#039;/g, (char) => entities[char])
 }
 
-/**
- * removeLastTrailingSlash
- */
 export function removeLastTrailingSlash(url: string) {
   if (typeof url !== 'string') return url
   return url.replace(/\/$/, '')
 }
 
-/**
- * removeExtraSpaces
- */
 export function removeExtraSpaces(text: string) {
   if (typeof text !== 'string') return
   return text.replace(/\s+/g, ' ').trim()

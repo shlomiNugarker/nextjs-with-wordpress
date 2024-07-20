@@ -77,8 +77,6 @@ export async function getPostsByCategoryId(categoryId: number) {
         },
       })
 
-    console.log(data)
-
     return data.posts.nodes
   } catch (err) {
     console.log(err)

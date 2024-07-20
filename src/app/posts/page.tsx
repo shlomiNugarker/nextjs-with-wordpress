@@ -1,15 +1,19 @@
-import { getPaginatedPosts } from '../../lib/posts'
+import { getAllPosts } from '@/lib/posts'
 
 export default async function Posts() {
-  const { posts, pagination } = await getPaginatedPosts({
-    queryIncludes: 'archive',
-  })
-  const basePath = '/posts'
-  // console.log(posts, pagination)
+  const posts = await getAllPosts()
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      Hello posts
-    </main>
+    <div>
+      <h1>All Posts</h1>
+      <ul>
+        {posts.map((post) => (
+          <li key={post.id}>
+            <h5>{post.title}</h5>
+            {/* <div dangerouslySetInnerHTML={{ __html: post.content }} /> */}
+          </li>
+        ))}
+      </ul>
+    </div>
   )
 }

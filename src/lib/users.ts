@@ -1,10 +1,11 @@
 import { GET_ALL_USERS } from '@/queries/users'
 import { getApolloClient } from './apollo-client'
+import { ApolloQueryResult } from '@apollo/client'
 
 export async function getAllUsers() {
   try {
     const apolloClient = getApolloClient()
-    const { data }: { data: RootQueryToUsersConnection } =
+    const { data }: ApolloQueryResult<RootQueryToUsersConnection> =
       await apolloClient.query({
         query: GET_ALL_USERS,
       })

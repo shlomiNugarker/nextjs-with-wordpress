@@ -6,13 +6,15 @@ import {
   GET_POSTS_BY_CATEGORY_ID,
 } from '@/queries/posts'
 import { getApolloClient } from './apollo-client'
+import { ApolloQueryResult } from '@apollo/client'
 
 export async function getAllPosts() {
   try {
     const client = getApolloClient()
-    const { data }: { data: RootQueryToPostsConnection } = await client.query({
-      query: GET_ALL_POSTS,
-    })
+    const { data }: ApolloQueryResult<RootQueryToPostsConnection> =
+      await client.query({
+        query: GET_ALL_POSTS,
+      })
 
     return data.posts.nodes
   } catch (err) {
@@ -23,7 +25,7 @@ export async function getAllPosts() {
 export async function getAllPostsSlugs() {
   try {
     const client = getApolloClient()
-    const { data }: { data: RootQueryToPostsSlugsConnection } =
+    const { data }: ApolloQueryResult<RootQueryToPostsSlugsConnection> =
       await client.query({
         query: GET_ALL_POSTS_SLUGS,
       })
@@ -33,16 +35,16 @@ export async function getAllPostsSlugs() {
     console.log(err)
   }
 }
-
 export async function getPostBySlug(slug: string) {
   try {
     const client = getApolloClient()
-    const { data }: { data: RootQueryToPostConnection } = await client.query({
-      query: GET_POST_BY_SLUG,
-      variables: {
-        slug,
-      },
-    })
+    const { data }: ApolloQueryResult<RootQueryToPostConnection> =
+      await client.query({
+        query: GET_POST_BY_SLUG,
+        variables: {
+          slug,
+        },
+      })
 
     return data.postBy
   } catch (err) {
@@ -52,7 +54,7 @@ export async function getPostBySlug(slug: string) {
 export async function getPostsByAuthorSlug(slug: string) {
   try {
     const client = getApolloClient()
-    const { data }: { data: RootQueryToPostsSlugsConnection } =
+    const { data }: ApolloQueryResult<RootQueryToPostsSlugsConnection> =
       await client.query({
         query: GET_POSTS_BY_AUTHOR_SLUG,
         variables: {
@@ -65,11 +67,12 @@ export async function getPostsByAuthorSlug(slug: string) {
     console.log(err)
   }
 }
-
+{
+}
 export async function getPostsByCategoryId(categoryId: number) {
   try {
     const client = getApolloClient()
-    const { data }: { data: RootQueryToPostsByCategoryIDConnection } =
+    const { data }: ApolloQueryResult<RootQueryToPostsByCategoryIDConnection> =
       await client.query({
         query: GET_POSTS_BY_CATEGORY_ID,
         variables: {

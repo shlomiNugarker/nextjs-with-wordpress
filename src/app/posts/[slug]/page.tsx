@@ -1,3 +1,4 @@
+import { getPostBySlug } from '@/lib/posts'
 import Link from 'next/link'
 
 export default async function Post({
@@ -7,22 +8,17 @@ export default async function Post({
   params: { slug: string }
   searchParams?: { [key: string]: string | string[] | undefined }
 }) {
+  const post = await getPostBySlug(params.slug)
+
+  if (!post) return <div>cant get a post</div>
   return (
-    <main className="">
-      Hello a post
-      {/* <div>
-        <section>
-          {post?.title} <br />
-          <Link href={authorPathByName(author.name)} rel="author">
-            {author.name}
-          </Link>
-        </section>
-        <div
-          dangerouslySetInnerHTML={{
-            __html: post.content,
-          }}
-        />{' '}
-      </div> */}
-    </main>
+    <div>
+      <h1>{post.title}</h1>
+      <div
+        dangerouslySetInnerHTML={{
+          __html: post.content,
+        }}
+      />
+    </div>
   )
 }

@@ -6,7 +6,6 @@ export default async function Page({
 }: {
   params: { parentSlug: string }
 }) {
-  console.log(params)
   const page = await getPageByUri(params.parentSlug)
 
   if (!page) return <p>Can&apos;t get page</p>

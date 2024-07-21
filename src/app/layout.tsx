@@ -4,7 +4,7 @@ import '../styles/main.scss'
 import theme from '../config/theme.json'
 import config from '../config/config.json'
 import Providers from '@/layouts/partials/Providers'
-import { Header } from '@/layouts/partials/Header'
+import { Header } from '@/layouts/components/Header'
 import { getAllPages } from '@/lib/pages'
 
 const inter = Inter({ subsets: ['latin'] })

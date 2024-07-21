@@ -1,7 +1,6 @@
 'use client'
 
 import config from '../../config/config.json'
-import { plainify } from '@/lib/utils/textConverter'
 import { usePathname } from 'next/navigation'
 
 const SeoMeta = ({
@@ -26,24 +25,22 @@ const SeoMeta = ({
   return (
     <>
       <title>
-        {plainify(meta_title ? meta_title : title ? title : config.site.title)}
+        {meta_title ? meta_title : title ? title : config.site.title}
       </title>
       {canonical && <link rel="canonical" href={canonical} itemProp="url" />}
       {noindex && <meta name="robots" content="noindex,nofollow" />}
       <meta
         name="description"
-        content={plainify(description ? description : meta_description)}
+        content={description ? description : meta_description}
       />
       <meta name="author" content={meta_author} />
       <meta
         property="og:title"
-        content={plainify(
-          meta_title ? meta_title : title ? title : config.site.title
-        )}
+        content={meta_title ? meta_title : title ? title : config.site.title}
       />
       <meta
         property="og:description"
-        content={plainify(description ? description : meta_description)}
+        content={description ? description : meta_description}
       />
       <meta property="og:type" content="website" />
       <meta
@@ -52,13 +49,11 @@ const SeoMeta = ({
       />
       <meta
         name="twitter:title"
-        content={plainify(
-          meta_title ? meta_title : title ? title : config.site.title
-        )}
+        content={meta_title ? meta_title : title ? title : config.site.title}
       />
       <meta
         name="twitter:description"
-        content={plainify(description ? description : meta_description)}
+        content={description ? description : meta_description}
       />
       <meta
         property="og:image"

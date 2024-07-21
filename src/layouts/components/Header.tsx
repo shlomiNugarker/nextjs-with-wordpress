@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState } from 'react'
-import ThemeSwitcher from '../components/ThemeSwitcher'
+import ThemeSwitcher from './ThemeSwitcher'
 import Link from 'next/link'
 
 export const Header = ({
@@ -32,10 +32,12 @@ export const Header = ({
 
   return (
     <>
-      <ThemeSwitcher />
       <header className=" ">
         <nav className="container mx-auto p-4 flex justify-between items-center">
-          <div className="text-2xl font-bold">My Website</div>
+          <Link href={'/'} className="text-2xl font-bold">
+            My Website
+          </Link>
+          <ThemeSwitcher />
           <ul className="flex space-x-4">
             {pages.map(
               (page) =>

@@ -18,7 +18,7 @@ export async function getAllPosts() {
 
     return data.posts.nodes
   } catch (err) {
-    console.log(err)
+    console.error(err)
   }
 }
 
@@ -32,7 +32,7 @@ export async function getAllPostsSlugs() {
 
     return data.posts.nodes
   } catch (err) {
-    console.log(err)
+    console.error(err)
   }
 }
 export async function getPostBySlug(slug: string) {
@@ -48,7 +48,7 @@ export async function getPostBySlug(slug: string) {
 
     return data.postBy
   } catch (err) {
-    console.log(err)
+    console.error(err)
   }
 }
 export async function getPostsByAuthorSlug(slug: string) {
@@ -64,7 +64,7 @@ export async function getPostsByAuthorSlug(slug: string) {
 
     return data.posts.nodes
   } catch (err) {
-    console.log(err)
+    console.error(err)
   }
 }
 {
@@ -82,6 +82,6 @@ export async function getPostsByCategoryId(categoryId: number) {
 
     return data.posts.nodes
   } catch (err) {
-    console.log(err)
+    console.error(err)
   }
 }

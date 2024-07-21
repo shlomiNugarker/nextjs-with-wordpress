@@ -11,12 +11,16 @@ export async function getAllUsers() {
       })
     return data.users.nodes
   } catch (err) {
-    console.log(err)
+    console.error(err)
   }
 }
 
 export async function getAuthorByNameSlug(name: string) {
-  const users = await getAllUsers()
-  const user = users?.find((user) => user.name === name)
-  return user
+  try {
+    const users = await getAllUsers()
+    const user = users?.find((user) => user.name === name)
+    return user
+  } catch (err) {
+    console.error(err)
+  }
 }

@@ -5,6 +5,7 @@ import theme from '../config/theme.json'
 import config from '../config/config.json'
 import Providers from '@/layouts/partials/Providers'
 import { Header } from '@/layouts/partials/Header'
+import { getAllPages } from '@/lib/pages'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -13,11 +14,13 @@ export const metadata: Metadata = {
   description: 'Nextjs + WordPress app',
 }
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode
 }>) {
+  const pages = await getAllPages()
+
   const pf = theme.fonts.font_family.primary
   const sf = theme.fonts.font_family.secondary
   return (
@@ -54,7 +57,7 @@ export default function RootLayout({
       </head>
       <body className={inter.className}>
         <Providers>
-          <Header />
+          <Header pages={pages || []} />
           {children}
         </Providers>
       </body>

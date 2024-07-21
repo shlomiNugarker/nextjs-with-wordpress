@@ -11,7 +11,7 @@ export async function getAllCategories() {
 
     return data.categories.nodes
   } catch (err) {
-    console.log(err)
+    console.error(err)
   }
 }
 export async function getCategoryBySlug(slug: string) {
@@ -27,6 +27,6 @@ export async function getCategoryBySlug(slug: string) {
 
     return data.category
   } catch (err) {
-    console.log(err)
+    console.error(err)
   }
 }

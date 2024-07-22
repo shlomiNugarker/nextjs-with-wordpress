@@ -13,6 +13,13 @@ export const GET_ALL_POSTS = gql`
         modified
         status
         isSticky
+
+        seo {
+          metaDesc
+          fullHead
+          title
+        }
+
         author {
           node {
             id
@@ -89,6 +96,13 @@ export const GET_POST_BY_SLUG = gql`
       modified
       status
       isSticky
+
+      seo {
+        metaDesc
+        fullHead
+        title
+      }
+
       author {
         node {
           id
@@ -97,6 +111,7 @@ export const GET_POST_BY_SLUG = gql`
           description
         }
       }
+
       categories {
         nodes {
           id
@@ -104,6 +119,7 @@ export const GET_POST_BY_SLUG = gql`
           slug
         }
       }
+
       tags {
         nodes {
           id
@@ -111,6 +127,7 @@ export const GET_POST_BY_SLUG = gql`
           slug
         }
       }
+
       featuredImage {
         node {
           sourceUrl
@@ -124,6 +141,7 @@ export const GET_POST_BY_SLUG = gql`
           id
         }
       }
+
       comments {
         nodes {
           id

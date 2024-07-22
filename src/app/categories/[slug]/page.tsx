@@ -4,10 +4,8 @@ import Link from 'next/link'
 
 export default async function Category({
   params,
-  searchParams,
 }: {
   params: { slug: string }
-  searchParams?: { [key: string]: string | string[] | undefined }
 }) {
   const category = await getCategoryBySlug(params?.slug)
   const postsByCategory = category
@@ -16,7 +14,6 @@ export default async function Category({
 
   return (
     <main className="">
-      Hello a category slug <br />
       {postsByCategory &&
         postsByCategory.map((post) => (
           <Link key={post.title} href={'/posts/' + post.slug}>

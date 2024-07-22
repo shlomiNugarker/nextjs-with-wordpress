@@ -183,3 +183,23 @@ export const GET_POSTS_BY_CATEGORY_ID = gql`
     }
   }
 `
+
+export const GET_POSTS_BY_TAG_NAME = gql`
+  query GetPostsByTagName($name: String!) {
+    tags(where: { search: $name }) {
+      nodes {
+        id
+        name
+        posts {
+          nodes {
+            id
+            title
+            slug
+            excerpt
+            content
+          }
+        }
+      }
+    }
+  }
+`

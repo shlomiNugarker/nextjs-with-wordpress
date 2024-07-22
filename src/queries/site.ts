@@ -1,11 +1,12 @@
 import { gql } from '@apollo/client'
 
-export const QUERY_SITE_DATA = gql`
-  query SiteData {
+export const GET_SITE_DATA = gql`
+  query GetSiteData {
     generalSettings {
-      description
       language
       title
+      description
+      url
     }
   }
 `

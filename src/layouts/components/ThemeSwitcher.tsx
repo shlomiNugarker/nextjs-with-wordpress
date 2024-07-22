@@ -14,7 +14,6 @@ const ThemeSwitcher = () => {
     <>
       {theme_switcher && (
         <span>
-          <span> Theme switcher: </span>
           <input
             id="theme-switcher"
             type="checkbox"

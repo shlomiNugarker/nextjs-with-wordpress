@@ -4,6 +4,7 @@ import {
   GET_POST_BY_SLUG,
   GET_POSTS_BY_AUTHOR_SLUG,
   GET_POSTS_BY_CATEGORY_ID,
+  GET_POSTS_BY_TAG_NAME,
 } from '@/queries/posts'
 import { getApolloClient } from './apollo-client'
 import { ApolloQueryResult } from '@apollo/client'
@@ -51,14 +52,14 @@ export async function getPostBySlug(slug: string) {
     console.error(err)
   }
 }
-export async function getPostsByAuthorSlug(slug: string) {
+export async function getPostsByAuthorSlug(name: string) {
   try {
     const client = getApolloClient()
     const { data }: ApolloQueryResult<RootQueryToPostsSlugsConnection> =
       await client.query({
-        query: GET_POSTS_BY_AUTHOR_SLUG,
+        query: GET_POSTS_BY_TAG_NAME,
         variables: {
-          slug,
+          name,
         },
       })
 
@@ -67,8 +68,7 @@ export async function getPostsByAuthorSlug(slug: string) {
     console.error(err)
   }
 }
-{
-}
+
 export async function getPostsByCategoryId(categoryId: number) {
   try {
     const client = getApolloClient()
@@ -81,6 +81,23 @@ export async function getPostsByCategoryId(categoryId: number) {
       })
 
     return data.posts.nodes
+  } catch (err) {
+    console.error(err)
+  }
+}
+
+export async function getPostsByTagName(name: string) {
+  try {
+    const client = getApolloClient()
+    const { data }: ApolloQueryResult<RootQueryToTagConnection> =
+      await client.query({
+        query: GET_POSTS_BY_TAG_NAME,
+        variables: {
+          name,
+        },
+      })
+
+    return data.tags.nodes[0].posts.nodes
   } catch (err) {
     console.error(err)
   }

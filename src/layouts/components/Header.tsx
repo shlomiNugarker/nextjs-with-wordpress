@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState } from 'react'
-import ThemeSwitcher from './ThemeSwitcher'
+import ThemeSwitcher from '../components/ThemeSwitcher'
 import Link from 'next/link'
 
 export const Header = ({
@@ -37,15 +37,33 @@ export const Header = ({
           <Link href={'/'} className="text-2xl font-bold">
             My Website
           </Link>
-          <ThemeSwitcher />
           <ul className="flex space-x-4">
+            <li className="relative">
+              <Link href={'/posts/'} className="">
+                Posts
+              </Link>
+            </li>
+            <li className="relative">
+              <Link href={'/tags/'} className="">
+                Tags
+              </Link>
+            </li>
+            <li className="relative">
+              <Link href={'/authors/'} className="">
+                Authors
+              </Link>
+            </li>
+            <li className="relative">
+              <Link href={'/categories/'} className="">
+                Categories
+              </Link>
+            </li>
             {pages.map(
               (page) =>
                 !page.hasParent && (
                   <li
                     key={page.uri}
                     onMouseEnter={() => handleMouseEnter(page.uri)}
-                    className="relative"
                   >
                     <Link href={'/page/' + page.uri} className="">
                       {page.title}
@@ -73,6 +91,7 @@ export const Header = ({
                   </li>
                 )
             )}
+            <ThemeSwitcher />
           </ul>
         </nav>
       </header>

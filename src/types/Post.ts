@@ -26,6 +26,7 @@ interface Comment {
 }
 
 interface Post {
+  [key: string]: any
   id: string
   title: string
   content: string
@@ -44,6 +45,7 @@ interface Post {
 }
 
 interface FeaturedImage {
+  [key: string]: any
   sourceUrl: string
   title: string
   description: string | null
@@ -75,6 +77,7 @@ interface RootQueryToPostConnection {
 interface RootQueryToPostsSlugsConnection {
   posts: {
     nodes: {
+      [key: string]: any
       id: string
       title: string
       slug: string
@@ -82,4 +85,27 @@ interface RootQueryToPostsSlugsConnection {
     }[]
   }
   __typename: string
+}
+
+interface RootQueryToPostsFromTagConnection {
+  tags: {
+    nodes: {
+      id: string
+      name: string
+      posts: {
+        nodes: {
+          [key: string]: any
+          id: string
+          title: string
+          slug: string
+          excerpt: string
+          content: string
+          __typename: string
+        }[]
+        __typename: 'TagToPostConnection'
+      }
+      __typename: 'Tag'
+    }[]
+    __typename: 'RootQueryToTagConnection'
+  }
 }

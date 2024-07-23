@@ -89,7 +89,7 @@ export async function getPostsByCategoryId(categoryId: number) {
 export async function getPostsByTagName(name: string) {
   try {
     const client = getApolloClient()
-    const { data }: ApolloQueryResult<RootQueryToTagConnection> =
+    const { data }: ApolloQueryResult<RootQueryToPostsFromTagConnection> =
       await client.query({
         query: GET_POSTS_BY_TAG_NAME,
         variables: {

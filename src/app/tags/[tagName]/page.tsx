@@ -3,9 +3,6 @@ import Link from 'next/link'
 
 export default async function Tag({ params }: { params: { tagName: string } }) {
   const posts = await getPostsByTagName(params.tagName)
-  console.log(posts)
-
-  // console.log(posts)
 
   return (
     <div>

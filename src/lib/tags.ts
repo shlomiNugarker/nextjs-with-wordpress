@@ -9,8 +9,6 @@ export async function getAllTags() {
       query: GET_ALL_TAGS,
     })
 
-    // console.log('tags: ', data.tags.nodes)
-
     return data.tags.nodes
   } catch (err) {
     console.error(err)

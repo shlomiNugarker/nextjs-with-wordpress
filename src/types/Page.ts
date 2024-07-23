@@ -1,4 +1,5 @@
 interface Page {
+  [key: string]: any
   uri: string
   slug: string
   id: string
@@ -35,6 +36,7 @@ interface PageDataResponse {
 interface RootQueryToPagesConnection {
   pages: {
     nodes: {
+      [key: string]: any
       uri: string
       slug: string
       id: string
